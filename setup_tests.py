@@ -23,33 +23,41 @@ if OS == "nt":
     CMD_FOR_CREATING_VENV = "python -m venv venv"
     CMD_FOR_DOWNLOADING_MODULES_TO_VENV = r"venv\Scripts\pip install -r {}" \
         .format(REQUIREMENTS_FILE_NAME)
-    CMD_FOR_SET_PATH = 'setx path "%path%{}{}"'.format(os.pathsep, WEBDRIVER_DIRECTORY)
 # Команды для Linux.
 else:
     CMD_FOR_CREATING_VENV = "python3 -m venv venv"
     CMD_FOR_DOWNLOADING_MODULES_TO_VENV = "venv/bin/pip3 install -r {}" \
         .format(REQUIREMENTS_FILE_NAME)
-    CMD_FOR_SET_PATH = 'export PATH={}{}:$PATH"'.format(WEBDRIVER_DIRECTORY, os.pathsep)
 
 # Создаем директорию для веб-драйверов.
-print("Creating directory for web-drivers...")
-try:
-    os.mkdir(WEBDRIVER_DIRECTORY)
-except OSError:
-    print("Creation of the directory '{}' failed".format(WEBDRIVER_DIRECTORY))
+if not os.path.isdir(WEBDRIVER_DIRECTORY):
+
+    print("Creating directory for web-drivers...")
+    try:
+        os.mkdir(WEBDRIVER_DIRECTORY)
+        print("Successfully created the directory '{}'".format(WEBDRIVER_DIRECTORY))
+        IS_WEBDRIVER_DIRECTORY_EXISTS = True
+    except OSError:
+        print("Creation of the directory '{}' failed".format(WEBDRIVER_DIRECTORY))
+        IS_WEBDRIVER_DIRECTORY_EXISTS = False
 else:
-    print("Successfully created the directory '{}'".format(WEBDRIVER_DIRECTORY))
+    IS_WEBDRIVER_DIRECTORY_EXISTS = True
 
 # Создаем виртуальное окружение и получаем код завершения.
-print("Creating virtual environment...")
-return_code = os.system(CMD_FOR_CREATING_VENV)
+if not os.path.isdir(os.path.join(CURRENT_DIRECTORY, "venv")):
+    print("Creating virtual environment...")
+    return_code = os.system(CMD_FOR_CREATING_VENV)
 
-# Если код завершения - 0, то значит, что окружение было
-# успешно создано.
-if return_code == 0:
-    print("Successfully created the virtual environment in 'venv'.")
+    # Если код завершения - 0, то значит, что окружение было
+    # успешно создано.
+    if return_code == 0:
+        print("Successfully created the virtual environment in 'venv'.")
+        IS_VIRTUALENV_EXISTS = True
+    else:
+        print("Error in creating virtual environment!")
+        IS_VIRTUALENV_EXISTS = False
 else:
-    print("Error in creating virtual environment!")
+    IS_VIRTUALENV_EXISTS = True
 
 # Загружаем модули для виртуального окружения
 print("Downloading modules for virtual environment...")
@@ -58,16 +66,20 @@ return_code = os.system(CMD_FOR_DOWNLOADING_MODULES_TO_VENV)
 # Если код завершения - 0, то значит, что все модули были загружены.
 if return_code == 0:
     print("Successfully downloaded all modules for virtual environment.")
+    IS_MODULES_DOWNLOADED = True
 else:
     print("Error in downloading modules for virtual environment!")
+    IS_MODULES_DOWNLOADED = False
 
-# Создаем новую переменную для PATH, включающую
-# директорию с драйвером для браузера.
-print("Editing PATH...")
-return_code = os.system(CMD_FOR_SET_PATH)
+# Выводим итоги.
+print("\n\n====================== SUMMARY ======================\n" +
+      "Webdriver directory created: {}\n".format(IS_WEBDRIVER_DIRECTORY_EXISTS) +
+      "Virtual Environment created: {}\n".format(IS_VIRTUALENV_EXISTS) +
+      "Modules downloaded to virtual environment: {}\n".format(IS_MODULES_DOWNLOADED))
 
-# Если код завершения - 0, то значит, что редактирование PATH прошло успешно.
-if return_code == 0:
-    print("Successfully edited PATH. Now, restart your terminal.")
+if IS_WEBDRIVER_DIRECTORY_EXISTS and \
+        IS_VIRTUALENV_EXISTS and IS_MODULES_DOWNLOADED:
+    print("Successfully completed setting up testing environment.")
 else:
-    print("Error in editing PATH!")
+    print("If something from the summary isn't 'True', than try to setting up\n" +
+          "by following instructions in the file called 'README.MD'")
