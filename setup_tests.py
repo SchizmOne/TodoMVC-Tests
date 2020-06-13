@@ -1,4 +1,4 @@
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """Автор: schizm.one@gmail.com
 Данный сценарий предназначен для подготовки окружения
@@ -9,9 +9,7 @@ PATH, чтобы в дальнейшем тесты могли вызывать 
 для браузеров.
 """
 
-
 import os
-
 
 # Для начала, определим все постоянные данные,
 # вроде типа ОС и названий файлов.
@@ -23,15 +21,24 @@ WEBDRIVER_DIRECTORY = os.path.join(CURRENT_DIRECTORY, "webdrivers")
 # Команды для Windows.
 if OS == "nt":
     CMD_FOR_CREATING_VENV = "python -m venv venv"
-    CMD_FOR_DOWNLOADING_MODULES_TO_VENV = r"venv\Scripts\pip install -r {}"\
-                                        .format(REQUIREMENTS_FILE_NAME)
+    CMD_FOR_DOWNLOADING_MODULES_TO_VENV = r"venv\Scripts\pip install -r {}" \
+        .format(REQUIREMENTS_FILE_NAME)
     CMD_FOR_SET_PATH = 'setx path "%path%{}{}"'.format(os.pathsep, WEBDRIVER_DIRECTORY)
 # Команды для Linux.
 else:
     CMD_FOR_CREATING_VENV = "python3 -m venv venv"
-    CMD_FOR_DOWNLOADING_MODULES_TO_VENV = "venv/bin/pip3 install -r {}"\
-                                        .format(REQUIREMENTS_FILE_NAME)
-    CMD_FOR_SET_PATH = 'setx path "%path%{}{}"'.format(os.pathsep, WEBDRIVER_DIRECTORY)
+    CMD_FOR_DOWNLOADING_MODULES_TO_VENV = "venv/bin/pip3 install -r {}" \
+        .format(REQUIREMENTS_FILE_NAME)
+    CMD_FOR_SET_PATH = 'export PATH={}{}:$PATH"'.format(WEBDRIVER_DIRECTORY, os.pathsep)
+
+# Создаем директорию для веб-драйверов.
+print("Creating directory for web-drivers...")
+try:
+    os.mkdir(WEBDRIVER_DIRECTORY)
+except OSError:
+    print("Creation of the directory '{}' failed".format(WEBDRIVER_DIRECTORY))
+else:
+    print("Successfully created the directory '{}'".format(WEBDRIVER_DIRECTORY))
 
 # Создаем виртуальное окружение и получаем код завершения.
 print("Creating virtual environment...")
@@ -40,7 +47,7 @@ return_code = os.system(CMD_FOR_CREATING_VENV)
 # Если код завершения - 0, то значит, что окружение было
 # успешно создано.
 if return_code == 0:
-    print("Virtual environment successfully created.")
+    print("Successfully created the virtual environment in 'venv'.")
 else:
     print("Error in creating virtual environment!")
 
@@ -50,7 +57,7 @@ return_code = os.system(CMD_FOR_DOWNLOADING_MODULES_TO_VENV)
 
 # Если код завершения - 0, то значит, что все модули были загружены.
 if return_code == 0:
-    print("All modules for virtual environment have been sucessfully downloaded.")
+    print("Successfully downloaded all modules for virtual environment.")
 else:
     print("Error in downloading modules for virtual environment!")
 
