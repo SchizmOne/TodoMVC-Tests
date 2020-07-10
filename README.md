@@ -1,5 +1,4 @@
 # TodoMVC-Tests
-[TOC]
 
 Проект с автоматическими тестами для веб-приложения [TodoMVC](http://todomvc.com/examples/react/).
 
