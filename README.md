@@ -1,5 +1,7 @@
 # TodoMVC-Tests
 
+Автор: schizm.one@gmail.com
+
 Проект с автоматическими тестами для веб-приложения [TodoMVC](http://todomvc.com/examples/react/).
 
 Тесты реализованы с использованием библиотеки [Selenium](https://selenium-python.readthedocs.io/index.html) для
